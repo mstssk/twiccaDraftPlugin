@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<string name="app_name">下書きプラグイン for twicca</string>
+	<string name="msg_save_succesfully">下書きを保存しました。</string>
+	<string name="msg_save_failed">下書きの保存に失敗しました。</string>
+	<string name="msg_no_draft">保存された下書きがありません。</string>
+	<string name="msg_empty_tweet">何も入力されていません。</string>
+	<string name="label_list_draft">保存済みの下書きを一覧</string>
+	<string name="label_save_tweet">下書きを保存</string>
+	<string name="label_loading">読み込み中...</string>
+	<string name="label_save_new_draft">新規保存</string>
+	<string name="label_delete">削除</string>
+	<string name="label_overwrite">上書き保存</string>
+	<string name="label_load">読み込み</string>
+	<string name="label_confirm_dialog">確認ダイアログ</string>
+	<string name="text_only_editing">編集中のみ</string>
+	<string name="label_draft">下書き</string>
+	<string name="text_confirm">%1$sしますか？</string>
+	<string name="label_save_quickly">下書きをクイック保存</string>
+	<string name="label_quick_save">クイック保存</string>
+	
+</resources>
