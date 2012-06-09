@@ -8,22 +8,22 @@ package jp.mstssk.twiccaplugins.draft;
  */
 public class QuickSaveActivity extends DraftListActivity {
 
-	@Override
-	public void onStart() {
-		super.onStart();
-		if (!isFinishing()) {
-			if (isIntentTweetEmpty()) {
-				showEmptyTweetMsg();
-			} else {
-				saveTweet(getIntentTweet());
-			}
-			finish();
-		}
-	}
+    @Override
+    public void onStart() {
+        super.onStart();
+        if (!isFinishing()) {
+            if (isIntentTweetEmpty()) {
+                showEmptyTweetMsg();
+            } else {
+                saveTweet(getIntentTweet());
+            }
+            finish();
+        }
+    }
 
-	@Override
-	protected Mode getMode() {
-		return Mode.SAVE;
-	}
+    @Override
+    protected Mode getMode() {
+        return Mode.SAVE;
+    }
 
 }
