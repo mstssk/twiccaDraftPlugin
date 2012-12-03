@@ -74,9 +74,9 @@ public class Tweet {
             buf.append(tweet);
             buf.append(", ");
         }
-        if (getInReplyToStatusId() != null) {
+        if (inReplyToStatusId != null) {
             buf.append("in_reply_to_status_id:");
-            buf.append(getInReplyToStatusId());
+            buf.append(inReplyToStatusId);
             buf.append(", ");
         }
         if (latitude != null) {
@@ -95,7 +95,7 @@ public class Tweet {
     }
 
     public boolean isEmpty() {
-        return isEmpty(tweet) && isEmpty(getInReplyToStatusId()) && isEmpty(latitude) && isEmpty(longitude);
+        return isEmpty(tweet) && isEmpty(inReplyToStatusId) && isEmpty(latitude) && isEmpty(longitude);
     }
 
     private boolean isEmpty(String str) {
