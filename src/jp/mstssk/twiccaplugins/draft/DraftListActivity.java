@@ -1,3 +1,4 @@
+
 package jp.mstssk.twiccaplugins.draft;
 
 import android.app.Activity;
@@ -19,29 +20,34 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+/**
+ * 下書き一覧画面
+ * 
+ * @author mstssk
+ */
 public class DraftListActivity extends Activity implements OnClickListener, OnLongClickListener {
 
     // 画面モード
-    enum Mode {
+    protected enum Mode {
         SAVE, // 保存モード
-        LIST
         // 読み込みモード
+        LIST;
     }
 
-    static int TAG_ID = R.id.tweet_id;
+    private static int TAG_ID = R.id.tweet_id;
 
     private Mode mode = Mode.SAVE;
 
-    public DraftDB db;
+    private DraftDB db;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(final Bundle savedInstanceState) {
         if (savedInstanceState != null) {
             // configuration変更前の状態を引き継がないようにする
             savedInstanceState.clear();
         }
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.list);
+        this.setContentView(R.layout.list);
     }
 
     @Override
@@ -52,39 +58,39 @@ public class DraftListActivity extends Activity implements OnClickListener, OnLo
         // manifestでのname
 
         // 画面モード切り替え
-        mode = getMode();
+        this.mode = this.getMode();
 
         // ツイートの空確認
-        if (mode.equals(Mode.SAVE) && isIntentTweetEmpty()) {
-            showEmptyTweetMsg();
-            finish();
+        if (this.mode.equals(Mode.SAVE) && this.isIntentTweetEmpty()) {
+            this.showEmptyTweetMsg();
+            this.finish();
             return;
         }
 
-        LinearLayout layout = (LinearLayout) findViewById(R.id.list_menus);
-        View buttonSaveNew = layout.findViewById(R.id.button_save_as_new);
+        final LinearLayout layout = (LinearLayout) this.findViewById(R.id.list_menus);
+        final View buttonSaveNew = layout.findViewById(R.id.button_save_as_new);
 
         // 読み込みモードでは新規登録ボタンを隠す
-        if (mode.equals(Mode.LIST)) {
+        if (this.mode.equals(Mode.LIST)) {
             buttonSaveNew.setVisibility(View.GONE);
         } else {
             buttonSaveNew.setOnClickListener(new OnClickListener() {
                 @Override
-                public void onClick(View view) {
-                    saveTweet(getIntentTweet());
+                public void onClick(final View view) {
+                    DraftListActivity.this.saveTweet(DraftListActivity.this.getIntentTweet());
                 }
             });
         }
 
-        db = new DraftDB(this);
+        this.db = new DraftDB(this);
 
         // 1件も保存されていない場合
-        if (mode.equals(Mode.LIST) && db.getTweetCount() == 0) {
-            Toast.makeText(this, getString(R.string.msg_no_draft), Toast.LENGTH_SHORT).show();
-            finish();
+        if (this.mode.equals(Mode.LIST) && this.db.getTweetCount() == 0) {
+            Toast.makeText(this, this.getString(R.string.msg_no_draft), Toast.LENGTH_SHORT).show();
+            this.finish();
         }
 
-        drawList();
+        this.drawList();
     }
 
     @Override
@@ -92,9 +98,9 @@ public class DraftListActivity extends Activity implements OnClickListener, OnLo
         super.onStop();
 
         // DB接続解除
-        if (db != null) {
-            db.close();
-            db = null;
+        if (this.db != null) {
+            this.db.close();
+            this.db = null;
         }
     }
 
@@ -102,21 +108,20 @@ public class DraftListActivity extends Activity implements OnClickListener, OnLo
      * 選択時処理
      */
     @Override
-    public void onClick(View view) {
+    public void onClick(final View view) {
 
         if (view.getId() == R.id.list_button_submenu) {
             // サブメニューボタンなら押し時処理へ
-            onLongClick(view);
+            this.onLongClick(view);
         } else {
-            long id = (Long) view.getTag(TAG_ID);
-            if (mode.equals(Mode.LIST)) {
+            final long id = (Long) view.getTag(TAG_ID);
+            if (this.mode.equals(Mode.LIST)) {
                 // ツイートをセット
-                loadTweet(id);
+                this.loadTweet(id);
             } else {
                 // ツイートを保存
-                overwriteTweet(null, id, getIntentTweet());
+                this.overwriteTweet(null, id, this.getIntentTweet());
             }
-
         }
     }
 
@@ -125,16 +130,16 @@ public class DraftListActivity extends Activity implements OnClickListener, OnLo
      * プレビューメニュー表示
      */
     @Override
-    public boolean onLongClick(View view) {
+    public boolean onLongClick(final View view) {
 
         // final LinearLayout item = (LinearLayout) view.getParent();
         final long id = (Long) view.getTag(TAG_ID);
-        View layout = LayoutInflater.from(this).inflate(R.layout.dialog, null);
+        final View layout = LayoutInflater.from(this).inflate(R.layout.dialog, null);
 
         // 読み込みモードでは「上書き保存」ボタンの代わりに「読み込み」ボタン表示
-        View buttonOverwrite = layout.findViewById(R.id.button_overwrite);
-        View buttonLoad = layout.findViewById(R.id.button_load);
-        if (Mode.LIST.equals(mode)) {
+        final View buttonOverwrite = layout.findViewById(R.id.button_overwrite);
+        final View buttonLoad = layout.findViewById(R.id.button_load);
+        if (Mode.LIST.equals(this.mode)) {
             buttonOverwrite.setVisibility(View.GONE);
             buttonLoad.setVisibility(View.VISIBLE);
         } else {
@@ -142,23 +147,24 @@ public class DraftListActivity extends Activity implements OnClickListener, OnLo
             buttonLoad.setVisibility(View.GONE);
         }
 
-        TextView text = (TextView) layout.findViewById(R.id.text_tweet_preview);
-        text.setText(db.loadTweet(id).getTweet());
+        final TextView text = (TextView) layout.findViewById(R.id.text_tweet_preview);
+        text.setText(this.db.loadTweet(id).getTweet());
         final AlertDialog dialog = new AlertDialog.Builder(this).setView(layout).create();
 
         // クリックリスナ
-        OnClickListener listener = new OnClickListener() {
+        final OnClickListener listener = new OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(final View v) {
                 switch (v.getId()) {
                     case R.id.button_delete:
-                        deleteTweet(dialog, id);
+                        DraftListActivity.this.deleteTweet(dialog, id);
                         break;
                     case R.id.button_overwrite:
-                        overwriteTweet(dialog, id, getIntentTweet());
+                        DraftListActivity.this.overwriteTweet(dialog, id,
+                                DraftListActivity.this.getIntentTweet());
                         break;
                     case R.id.button_load:
-                        loadTweet(id);
+                        DraftListActivity.this.loadTweet(id);
                         break;
                     default:
                         break;
@@ -181,27 +187,27 @@ public class DraftListActivity extends Activity implements OnClickListener, OnLo
      * リスト描き出し
      */
     private void drawList() {
-        LayoutInflater inflater = LayoutInflater.from(this);
-        LinearLayout layout = (LinearLayout) this.findViewById(R.id.list_menus);
+        final LayoutInflater inflater = LayoutInflater.from(this);
+        final LinearLayout layout = (LinearLayout) this.findViewById(R.id.list_menus);
 
         // Log.i("mstssk", "count:" +layout.getChildCount());
         layout.removeViews(1, layout.getChildCount() - 1);
 
-        SQLiteCursor cursor = db.loadTweet(null);
+        final SQLiteCursor cursor = this.db.loadTweet(null);
         cursor.moveToFirst();
         for (int i = 0; i < cursor.getCount(); i++) {
-            LinearLayout listitem = (LinearLayout) inflater.inflate(R.layout.listitem, null);
-            String text = cursor.getString(cursor.getColumnIndex(DraftDB.COLUMN_TWEET));
-            int index = cursor.getColumnIndex(DraftDB.COLUMN_ID);
-            Long id = cursor.getLong(index);
+            final LinearLayout listitem = (LinearLayout) inflater.inflate(R.layout.listitem, null);
+            final String text = cursor.getString(cursor.getColumnIndex(DraftDB.COLUMN_TWEET));
+            final int index = cursor.getColumnIndex(DraftDB.COLUMN_ID);
+            final Long id = cursor.getLong(index);
 
-            Button button = (Button) listitem.findViewById(R.id.list_button_main);
+            final Button button = (Button) listitem.findViewById(R.id.list_button_main);
             button.setText(text);
             button.setTag(TAG_ID, id);
             button.setOnClickListener(this);
             button.setOnLongClickListener(this);
 
-            ImageButton ib = (ImageButton) listitem.findViewById(R.id.list_button_submenu);
+            final ImageButton ib = (ImageButton) listitem.findViewById(R.id.list_button_submenu);
             ib.setTag(TAG_ID, id);
             ib.setOnClickListener(this);
 
@@ -219,8 +225,8 @@ public class DraftListActivity extends Activity implements OnClickListener, OnLo
      * 
      * @return
      */
-    boolean isIntentTweetEmpty() {
-        Tweet tweet = getIntentTweet();
+    protected boolean isIntentTweetEmpty() {
+        final Tweet tweet = this.getIntentTweet();
         return (tweet == null || tweet.isEmpty());
     }
 
@@ -229,20 +235,20 @@ public class DraftListActivity extends Activity implements OnClickListener, OnLo
      * 
      * @param id
      */
-    void loadTweet(final long id) {
-        boolean isConfLoad = isPrefBool(R.string.prefkey_confirm_load);
-        boolean isConfEditing = isPrefBool(R.string.prefkey_confirm_load_only_editing);
-        boolean isEmpty = isIntentTweetEmpty();
+    private void loadTweet(final long id) {
+        final boolean isConfLoad = this.isPrefBool(R.string.prefkey_confirm_load);
+        final boolean isConfEditing = this.isPrefBool(R.string.prefkey_confirm_load_only_editing);
+        final boolean isEmpty = this.isIntentTweetEmpty();
         if (isConfLoad && (!isConfEditing || (isConfEditing && !isEmpty))) {
-            DialogInterface.OnClickListener listener = new DialogInterface.OnClickListener() {
+            final DialogInterface.OnClickListener listener = new DialogInterface.OnClickListener() {
                 @Override
-                public void onClick(DialogInterface d, int which) {
-                    loadTweetInternal(id);
+                public void onClick(final DialogInterface d, final int which) {
+                    DraftListActivity.this.loadTweetInternal(id);
                 }
             };
-            showConfirmDialog(R.string.label_load, listener);
+            this.showConfirmDialog(R.string.label_load, listener);
         } else {
-            loadTweetInternal(id);
+            this.loadTweetInternal(id);
         }
 
     }
@@ -252,9 +258,9 @@ public class DraftListActivity extends Activity implements OnClickListener, OnLo
      * 
      * @param id ツイートのID
      */
-    void loadTweetInternal(long id) {
-        setResult(RESULT_OK, buildResultIntent(db.loadTweet(id)));
-        finish();
+    private void loadTweetInternal(final long id) {
+        this.setResult(RESULT_OK, this.buildResultIntent(this.db.loadTweet(id)));
+        this.finish();
     }
 
     /**
@@ -264,17 +270,17 @@ public class DraftListActivity extends Activity implements OnClickListener, OnLo
      * @param id
      * @param tweet
      */
-    void overwriteTweet(final Dialog dialog, final long id, final Tweet tweet) {
-        if (isPrefBool(R.string.prefkey_confirm_overwrite)) {
-            DialogInterface.OnClickListener listener = new DialogInterface.OnClickListener() {
+    private void overwriteTweet(final Dialog dialog, final long id, final Tweet tweet) {
+        if (this.isPrefBool(R.string.prefkey_confirm_overwrite)) {
+            final DialogInterface.OnClickListener listener = new DialogInterface.OnClickListener() {
                 @Override
-                public void onClick(DialogInterface d, int which) {
-                    overwriteTweetInternal(dialog, id, tweet);
+                public void onClick(final DialogInterface d, final int which) {
+                    DraftListActivity.this.overwriteTweetInternal(dialog, id, tweet);
                 }
             };
-            showConfirmDialog(R.string.label_overwrite, listener);
+            this.showConfirmDialog(R.string.label_overwrite, listener);
         } else {
-            overwriteTweetInternal(dialog, id, tweet);
+            this.overwriteTweetInternal(dialog, id, tweet);
         }
     }
 
@@ -284,15 +290,15 @@ public class DraftListActivity extends Activity implements OnClickListener, OnLo
      * @param id 上書かれるツイートのID
      * @param tweet 上書くツイート
      */
-    void overwriteTweetInternal(Dialog dialog, long id, Tweet tweet) {
-        db.saveTweet(id, tweet);
-        drawList();
+    private void overwriteTweetInternal(final Dialog dialog, final long id, final Tweet tweet) {
+        this.db.saveTweet(id, tweet);
+        this.drawList();
 
         if (dialog != null) {
             dialog.hide();
         }
 
-        finish();
+        this.finish();
 
         Toast.makeText(this, R.string.msg_save_succesfully, Toast.LENGTH_SHORT).show();
     }
@@ -303,17 +309,17 @@ public class DraftListActivity extends Activity implements OnClickListener, OnLo
      * @param dialog
      * @param id
      */
-    void deleteTweet(final Dialog dialog, final long id) {
-        if (isPrefBool(R.string.prefkey_confirm_delete)) {
-            DialogInterface.OnClickListener listener = new DialogInterface.OnClickListener() {
+    private void deleteTweet(final Dialog dialog, final long id) {
+        if (this.isPrefBool(R.string.prefkey_confirm_delete)) {
+            final DialogInterface.OnClickListener listener = new DialogInterface.OnClickListener() {
                 @Override
-                public void onClick(DialogInterface d, int which) {
-                    deleteTweetInternal(dialog, id);
+                public void onClick(final DialogInterface d, final int which) {
+                    DraftListActivity.this.deleteTweetInternal(dialog, id);
                 }
             };
-            showConfirmDialog(R.string.label_delete, listener);
+            this.showConfirmDialog(R.string.label_delete, listener);
         } else {
-            deleteTweetInternal(dialog, id);
+            this.deleteTweetInternal(dialog, id);
         }
     }
 
@@ -322,12 +328,12 @@ public class DraftListActivity extends Activity implements OnClickListener, OnLo
      * 
      * @param id ツイートのID
      */
-    void deleteTweetInternal(Dialog dialog, long id) {
-        db.deleteTweet(id);
-        if (mode.equals(Mode.LIST) && db.getTweetCount() == 0) {
-            finish();
+    private void deleteTweetInternal(final Dialog dialog, final long id) {
+        this.db.deleteTweet(id);
+        if (this.mode.equals(Mode.LIST) && this.db.getTweetCount() == 0) {
+            this.finish();
         } else {
-            drawList();
+            this.drawList();
         }
         dialog.hide();
     }
@@ -337,10 +343,10 @@ public class DraftListActivity extends Activity implements OnClickListener, OnLo
      * 
      * @param tweet
      */
-    void saveTweet(Tweet tweet) {
-        db.saveTweet(tweet);
+    protected void saveTweet(final Tweet tweet) {
+        this.db.saveTweet(tweet);
         Toast.makeText(this, R.string.msg_save_succesfully, Toast.LENGTH_SHORT).show();
-        finish();
+        this.finish();
     }
 
     /**
@@ -349,12 +355,13 @@ public class DraftListActivity extends Activity implements OnClickListener, OnLo
      * @return ツイート
      */
     protected Tweet getIntentTweet() {
-        Intent intent = getIntent();
-        String tweetText = intent.getStringExtra(Intent.EXTRA_TEXT);
-        String inReplyToStatusId = intent.getStringExtra(DraftDB.COLUMN_IN_REPLY_TO_STATUS_ID);
-        String latitude = intent.getStringExtra(DraftDB.COLUMN_LATITUDE);
-        String longitude = intent.getStringExtra(DraftDB.COLUMN_LONGITUDE);
-        Tweet tweet = new Tweet(tweetText, inReplyToStatusId, latitude, longitude);
+        final Intent intent = this.getIntent();
+        final String tweetText = intent.getStringExtra(Intent.EXTRA_TEXT);
+        final String inReplyToStatusId = intent
+                .getStringExtra(DraftDB.COLUMN_IN_REPLY_TO_STATUS_ID);
+        final String latitude = intent.getStringExtra(DraftDB.COLUMN_LATITUDE);
+        final String longitude = intent.getStringExtra(DraftDB.COLUMN_LONGITUDE);
+        final Tweet tweet = new Tweet(tweetText, inReplyToStatusId, latitude, longitude);
         return tweet;
     }
 
@@ -364,9 +371,9 @@ public class DraftListActivity extends Activity implements OnClickListener, OnLo
      * @param tweet 返却するツイート
      * @return Intent result
      */
-    Intent buildResultIntent(Tweet tweet) {
+    private Intent buildResultIntent(final Tweet tweet) {
 
-        Intent result = new Intent();
+        final Intent result = new Intent();
 
         result.putExtra(Intent.EXTRA_TEXT, tweet.getTweet());
         if (tweet.getInReplyToStatusId() != null) {
@@ -385,7 +392,7 @@ public class DraftListActivity extends Activity implements OnClickListener, OnLo
     /**
      * ツイートが渡されていないメッセージ表示
      */
-    void showEmptyTweetMsg() {
+    protected void showEmptyTweetMsg() {
         Toast.makeText(this, R.string.msg_empty_tweet, Toast.LENGTH_SHORT).show();
     }
 
@@ -395,8 +402,8 @@ public class DraftListActivity extends Activity implements OnClickListener, OnLo
      * @param purpose 確認対象の文字列リソースID
      * @param onYes コールバック
      */
-    void showConfirmDialog(int purpose, DialogInterface.OnClickListener onYes) {
-        String msg = getString(R.string.text_confirm, getString(purpose));
+    private void showConfirmDialog(final int purpose, final DialogInterface.OnClickListener onYes) {
+        final String msg = this.getString(R.string.text_confirm, this.getString(purpose));
         new AlertDialog.Builder(this).setMessage(msg).setPositiveButton(android.R.string.ok, onYes)
                 .setNegativeButton(android.R.string.cancel, null).show();
     }
@@ -407,10 +414,10 @@ public class DraftListActivity extends Activity implements OnClickListener, OnLo
      * @param id 設定キーの文字列リソースID
      * @return 設定 true / false
      */
-    boolean isPrefBool(int id) {
-        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
-        boolean defValue = getResources().getBoolean(R.bool.pref_default);
-        boolean result = pref.getBoolean(getString(id), defValue);
+    private boolean isPrefBool(final int id) {
+        final SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
+        final boolean defValue = this.getResources().getBoolean(R.bool.pref_default);
+        final boolean result = pref.getBoolean(this.getString(id), defValue);
         return result;
     }
 
@@ -421,7 +428,8 @@ public class DraftListActivity extends Activity implements OnClickListener, OnLo
      */
     protected Mode getMode() {
         // 呼び出し時のintent-filterによって、画面モード切り替え
-        if (getComponentName().getShortClassName().equals(getString(R.string.activity_save))) {
+        if (this.getComponentName().getShortClassName()
+                .equals(this.getString(R.string.activity_save))) {
             return Mode.SAVE;
         } else {
             return Mode.LIST;

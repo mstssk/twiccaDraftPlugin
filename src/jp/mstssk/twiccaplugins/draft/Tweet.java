@@ -1,5 +1,11 @@
+
 package jp.mstssk.twiccaplugins.draft;
 
+/**
+ * 下書きツイート
+ * 
+ * @author mstssk
+ */
 public class Tweet {
 
     private Long id;
@@ -8,12 +14,15 @@ public class Tweet {
     private String latitude;
     private String longitude;
 
-    public Tweet(long id, String tweet, String in_reply_to_status_id, String latitude, String longitude) {
+    public Tweet(final long id, final String tweet, final String in_reply_to_status_id,
+            final String latitude,
+            final String longitude) {
         this(tweet, in_reply_to_status_id, latitude, longitude);
         this.setId(id);
     }
 
-    public Tweet(String tweet, String inReplyToStatusId, String latitude, String longitude) {
+    public Tweet(final String tweet, final String inReplyToStatusId, final String latitude,
+            final String longitude) {
         this.setTweet(tweet);
         this.setInReplyToStatusId(inReplyToStatusId);
         this.setLatitude(latitude);
@@ -21,72 +30,73 @@ public class Tweet {
     }
 
     public Long getId() {
-        return id;
+        return this.id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
     public String getTweet() {
-        return tweet;
+        return this.tweet;
     }
 
-    public void setTweet(String tweet) {
+    public void setTweet(final String tweet) {
         this.tweet = tweet;
     }
 
     public String getInReplyToStatusId() {
-        return inReplyToStatusId;
+        return this.inReplyToStatusId;
     }
 
-    public void setInReplyToStatusId(String inReplyToStatusId) {
+    public void setInReplyToStatusId(final String inReplyToStatusId) {
         this.inReplyToStatusId = inReplyToStatusId;
     }
 
     public String getLatitude() {
-        return latitude;
+        return this.latitude;
     }
 
-    public void setLatitude(String latitude) {
+    public void setLatitude(final String latitude) {
         this.latitude = latitude;
     }
 
     public String getLongitude() {
-        return longitude;
+        return this.longitude;
     }
 
-    public void setLongitude(String longitude) {
+    public void setLongitude(final String longitude) {
         this.longitude = longitude;
     }
 
+    @Override
     public String toString() {
-        StringBuffer buf = new StringBuffer();
+        final StringBuffer buf = new StringBuffer();
         buf.append(" Tweet{");
 
-        if (id != null) {
+        if (this.id != null) {
             buf.append("id:");
-            buf.append(id);
+            buf.append(this.id);
             buf.append(", ");
         }
-        if (tweet != null) {
+        if (this.tweet != null) {
             buf.append("tweet:");
-            buf.append(tweet);
+            buf.append(this.tweet);
             buf.append(", ");
         }
-        if (inReplyToStatusId != null) {
+        if (this.inReplyToStatusId != null) {
             buf.append("in_reply_to_status_id:");
-            buf.append(inReplyToStatusId);
+            buf.append(this.inReplyToStatusId);
             buf.append(", ");
         }
-        if (latitude != null) {
+        if (this.latitude != null) {
             buf.append("latitude:");
-            buf.append(latitude);
+            buf.append(this.latitude);
             buf.append(", ");
         }
-        if (longitude != null) {
+        if (this.longitude != null) {
             buf.append("longitude:");
-            buf.append(longitude);
+            buf.append(this.longitude);
             buf.append(", ");
         }
         buf.append("}");
@@ -95,10 +105,11 @@ public class Tweet {
     }
 
     public boolean isEmpty() {
-        return isEmpty(tweet) && isEmpty(inReplyToStatusId) && isEmpty(latitude) && isEmpty(longitude);
+        return isEmpty(this.tweet) && isEmpty(this.inReplyToStatusId) && isEmpty(this.latitude)
+                && isEmpty(this.longitude);
     }
 
-    private boolean isEmpty(String str) {
+    private static boolean isEmpty(final String str) {
         return str == null || str.length() == 0;
     }
 
