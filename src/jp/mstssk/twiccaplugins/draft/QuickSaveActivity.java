@@ -1,6 +1,8 @@
 
 package jp.mstssk.twiccaplugins.draft;
 
+import jp.mstssk.twiccaplugins.draft.utils.TwiccaPluginApiUtils;
+
 /**
  * クイック保存
  * 
@@ -15,7 +17,7 @@ public class QuickSaveActivity extends DraftListActivity {
             if (this.isIntentTweetEmpty()) {
                 this.showEmptyTweetMsg();
             } else {
-                this.saveTweet(this.getIntentTweet());
+                this.saveTweet(TwiccaPluginApiUtils.getTweet(this.getIntent()));
             }
             this.finish();
         }

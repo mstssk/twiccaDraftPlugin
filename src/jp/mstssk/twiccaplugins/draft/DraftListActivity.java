@@ -5,9 +5,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.SharedPreferences;
-import android.database.sqlite.SQLiteCursor;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
@@ -19,6 +17,12 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import java.util.List;
+
+import jp.mstssk.twiccaplugins.draft.db.DraftTweetRepository;
+import jp.mstssk.twiccaplugins.draft.db.DraftTweetRepositoryImpl;
+import jp.mstssk.twiccaplugins.draft.utils.TwiccaPluginApiUtils;
 
 /**
  * 下書き一覧画面
@@ -38,7 +42,7 @@ public class DraftListActivity extends Activity implements OnClickListener, OnLo
 
     private Mode mode = Mode.SAVE;
 
-    private DraftDB db;
+    private DraftTweetRepository repository;
 
     @Override
     public void onCreate(final Bundle savedInstanceState) {
@@ -77,15 +81,19 @@ public class DraftListActivity extends Activity implements OnClickListener, OnLo
             buttonSaveNew.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(final View view) {
-                    DraftListActivity.this.saveTweet(DraftListActivity.this.getIntentTweet());
+                    DraftListActivity.this.saveTweet(TwiccaPluginApiUtils
+                            .getTweet(DraftListActivity.this.getIntent()));
                 }
             });
         }
 
-        this.db = new DraftDB(this);
+        if (this.repository == null) {
+            // TODO repositoryはDIするようにしたい
+            this.repository = new DraftTweetRepositoryImpl(this);
+        }
 
         // 1件も保存されていない場合
-        if (this.mode.equals(Mode.LIST) && this.db.getTweetCount() == 0) {
+        if (this.mode.equals(Mode.LIST) && this.repository.getCount() == 0) {
             Toast.makeText(this, this.getString(R.string.msg_no_draft), Toast.LENGTH_SHORT).show();
             this.finish();
         }
@@ -98,9 +106,8 @@ public class DraftListActivity extends Activity implements OnClickListener, OnLo
         super.onStop();
 
         // DB接続解除
-        if (this.db != null) {
-            this.db.close();
-            this.db = null;
+        if (this.repository != null) {
+            this.repository = null;
         }
     }
 
@@ -120,7 +127,8 @@ public class DraftListActivity extends Activity implements OnClickListener, OnLo
                 this.loadTweet(id);
             } else {
                 // ツイートを保存
-                this.overwriteTweet(null, id, this.getIntentTweet());
+                this.overwriteTweet(null, id,
+                        TwiccaPluginApiUtils.getTweet(this.getIntent()));
             }
         }
     }
@@ -148,7 +156,7 @@ public class DraftListActivity extends Activity implements OnClickListener, OnLo
         }
 
         final TextView text = (TextView) layout.findViewById(R.id.text_tweet_preview);
-        text.setText(this.db.loadTweet(id).getTweet());
+        text.setText(this.repository.load(id).getTweet());
         final AlertDialog dialog = new AlertDialog.Builder(this).setView(layout).create();
 
         // クリックリスナ
@@ -161,7 +169,8 @@ public class DraftListActivity extends Activity implements OnClickListener, OnLo
                         break;
                     case R.id.button_overwrite:
                         DraftListActivity.this.overwriteTweet(dialog, id,
-                                DraftListActivity.this.getIntentTweet());
+                                TwiccaPluginApiUtils.getTweet(DraftListActivity.this
+                                        .getIntent()));
                         break;
                     case R.id.button_load:
                         DraftListActivity.this.loadTweet(id);
@@ -193,13 +202,12 @@ public class DraftListActivity extends Activity implements OnClickListener, OnLo
         // Log.i("mstssk", "count:" +layout.getChildCount());
         layout.removeViews(1, layout.getChildCount() - 1);
 
-        final SQLiteCursor cursor = this.db.loadTweet(null);
-        cursor.moveToFirst();
-        for (int i = 0; i < cursor.getCount(); i++) {
+        final List<Tweet> list = this.repository.loadAll();
+        for (final Tweet tweet : list) {
+
             final LinearLayout listitem = (LinearLayout) inflater.inflate(R.layout.listitem, null);
-            final String text = cursor.getString(cursor.getColumnIndex(DraftDB.COLUMN_TWEET));
-            final int index = cursor.getColumnIndex(DraftDB.COLUMN_ID);
-            final Long id = cursor.getLong(index);
+            final String text = tweet.getTweet();
+            final Long id = tweet.getId();
 
             final Button button = (Button) listitem.findViewById(R.id.list_button_main);
             button.setText(text);
@@ -214,10 +222,7 @@ public class DraftListActivity extends Activity implements OnClickListener, OnLo
             // TODO 新規保存ボタンの位置を先頭か末尾か選べるようにする
             layout.addView(listitem);
 
-            cursor.moveToNext();
         }
-        cursor.close();
-
     }
 
     /**
@@ -226,7 +231,7 @@ public class DraftListActivity extends Activity implements OnClickListener, OnLo
      * @return
      */
     protected boolean isIntentTweetEmpty() {
-        final Tweet tweet = this.getIntentTweet();
+        final Tweet tweet = TwiccaPluginApiUtils.getTweet(this.getIntent());
         return (tweet == null || tweet.isEmpty());
     }
 
@@ -259,7 +264,7 @@ public class DraftListActivity extends Activity implements OnClickListener, OnLo
      * @param id ツイートのID
      */
     private void loadTweetInternal(final long id) {
-        this.setResult(RESULT_OK, this.buildResultIntent(this.db.loadTweet(id)));
+        this.setResult(RESULT_OK, TwiccaPluginApiUtils.createIntent(this.repository.load(id)));
         this.finish();
     }
 
@@ -291,7 +296,8 @@ public class DraftListActivity extends Activity implements OnClickListener, OnLo
      * @param tweet 上書くツイート
      */
     private void overwriteTweetInternal(final Dialog dialog, final long id, final Tweet tweet) {
-        this.db.saveTweet(id, tweet);
+        tweet.setId(id);
+        this.repository.update(tweet);
         this.drawList();
 
         if (dialog != null) {
@@ -329,8 +335,8 @@ public class DraftListActivity extends Activity implements OnClickListener, OnLo
      * @param id ツイートのID
      */
     private void deleteTweetInternal(final Dialog dialog, final long id) {
-        this.db.deleteTweet(id);
-        if (this.mode.equals(Mode.LIST) && this.db.getTweetCount() == 0) {
+        this.repository.delete(id);
+        if (this.mode.equals(Mode.LIST) && this.repository.getCount() == 0) {
             this.finish();
         } else {
             this.drawList();
@@ -344,49 +350,9 @@ public class DraftListActivity extends Activity implements OnClickListener, OnLo
      * @param tweet
      */
     protected void saveTweet(final Tweet tweet) {
-        this.db.saveTweet(tweet);
+        this.repository.insert(tweet);
         Toast.makeText(this, R.string.msg_save_succesfully, Toast.LENGTH_SHORT).show();
         this.finish();
-    }
-
-    /**
-     * Intentで渡されたツイートを取得
-     * 
-     * @return ツイート
-     */
-    protected Tweet getIntentTweet() {
-        final Intent intent = this.getIntent();
-        final String tweetText = intent.getStringExtra(Intent.EXTRA_TEXT);
-        final String inReplyToStatusId = intent
-                .getStringExtra(DraftDB.COLUMN_IN_REPLY_TO_STATUS_ID);
-        final String latitude = intent.getStringExtra(DraftDB.COLUMN_LATITUDE);
-        final String longitude = intent.getStringExtra(DraftDB.COLUMN_LONGITUDE);
-        final Tweet tweet = new Tweet(tweetText, inReplyToStatusId, latitude, longitude);
-        return tweet;
-    }
-
-    /**
-     * twiccaに返すIntentを生成
-     * 
-     * @param tweet 返却するツイート
-     * @return Intent result
-     */
-    private Intent buildResultIntent(final Tweet tweet) {
-
-        final Intent result = new Intent();
-
-        result.putExtra(Intent.EXTRA_TEXT, tweet.getTweet());
-        if (tweet.getInReplyToStatusId() != null) {
-            result.putExtra(DraftDB.COLUMN_IN_REPLY_TO_STATUS_ID, tweet.getInReplyToStatusId());
-        }
-        if (tweet.getLatitude() != null) {
-            result.putExtra(DraftDB.COLUMN_LATITUDE, tweet.getLatitude());
-        }
-        if (tweet.getLongitude() != null) {
-            result.putExtra(DraftDB.COLUMN_LONGITUDE, tweet.getLongitude());
-        }
-
-        return result;
     }
 
     /**

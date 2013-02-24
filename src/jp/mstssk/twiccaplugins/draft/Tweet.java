@@ -14,21 +14,6 @@ public class Tweet {
     private String latitude;
     private String longitude;
 
-    public Tweet(final long id, final String tweet, final String in_reply_to_status_id,
-            final String latitude,
-            final String longitude) {
-        this(tweet, in_reply_to_status_id, latitude, longitude);
-        this.setId(id);
-    }
-
-    public Tweet(final String tweet, final String inReplyToStatusId, final String latitude,
-            final String longitude) {
-        this.setTweet(tweet);
-        this.setInReplyToStatusId(inReplyToStatusId);
-        this.setLatitude(latitude);
-        this.setLongitude(longitude);
-    }
-
     public Long getId() {
         return this.id;
     }

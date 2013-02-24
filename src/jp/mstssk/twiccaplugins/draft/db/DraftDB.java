@@ -1,5 +1,5 @@
 
-package jp.mstssk.twiccaplugins.draft;
+package jp.mstssk.twiccaplugins.draft.db;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -7,6 +7,11 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteCursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import jp.mstssk.twiccaplugins.draft.Tweet;
 
 /**
  * DB sqlite table: draft<br>
@@ -23,18 +28,18 @@ public class DraftDB extends SQLiteOpenHelper {
     private static final String DB = "tweet_draft.db";
     private static final int DB_VERSION = 3;
     private static final String TABLE_NAME = "draft";
-    static final String COLUMN_ID = "_id";
-    static final String COLUMN_TWEET = "tweet";
-    static final String COLUMN_IN_REPLY_TO_STATUS_ID = "in_reply_to_status_id";
-    static final String COLUMN_LATITUDE = "latitude";
-    static final String COLUMN_LONGITUDE = "longitude";
+    private static final String COLUMN_ID = "_id";
+    private static final String COLUMN_TWEET = "tweet";
+    private static final String COLUMN_IN_REPLY_TO_STATUS_ID = "in_reply_to_status_id";
+    private static final String COLUMN_LATITUDE = "latitude";
+    private static final String COLUMN_LONGITUDE = "longitude";
     private static final String CREATE_TABLE = "create table " + TABLE_NAME + " ( " + COLUMN_ID
             + " integer primary key, " + COLUMN_TWEET + " text, " + COLUMN_IN_REPLY_TO_STATUS_ID
             + " text, "
             + COLUMN_LATITUDE + " text, " + COLUMN_LONGITUDE + " text );";
     private static final String DROP_TABLE = "drop table " + TABLE_NAME + ";";
 
-    public DraftDB(final Context context) {
+    DraftDB(final Context context) {
         super(context, DB, null, DB_VERSION);
     }
 
@@ -95,7 +100,7 @@ public class DraftDB extends SQLiteOpenHelper {
         value.put(COLUMN_LONGITUDE, longitude);
         final SQLiteDatabase db = this.getWritableDatabase();
         return db.update(TABLE_NAME, value, COLUMN_ID + "=?", new String[] {
-            Long.toString(id)
+                Long.toString(id)
         });
     }
 
@@ -126,28 +131,47 @@ public class DraftDB extends SQLiteOpenHelper {
 
     public Tweet loadTweet(final long id) {
         final Cursor cursor = this.loadTweet(Long.valueOf(id));
-        final int index_rowid = cursor.getColumnIndex(COLUMN_ID);
-        final int index_tweet = cursor.getColumnIndex(COLUMN_TWEET);
-        final int index_in_reply_to_status_id = cursor.getColumnIndex(COLUMN_IN_REPLY_TO_STATUS_ID);
-        final int index_latitude = cursor.getColumnIndex(COLUMN_LATITUDE);
-        final int index_longitude = cursor.getColumnIndex(COLUMN_LONGITUDE);
         cursor.moveToFirst();
-        return new Tweet(cursor.getLong(index_rowid), cursor.getString(index_tweet),
-                cursor.getString(index_in_reply_to_status_id), cursor.getString(index_latitude),
-                cursor.getString(index_longitude));
+        final Tweet tweet = getTweetFromCursorCurrentPosition(cursor);
+        cursor.close();
+        return tweet;
     }
 
     public long deleteTweet(final long id) {
         final SQLiteDatabase db = this.getWritableDatabase();
         return db.delete(TABLE_NAME, COLUMN_ID + "=?", new String[] {
-            Long.toString(id)
+                Long.toString(id)
         });
     }
 
     public int getTweetCount() {
         final SQLiteDatabase db = this.getReadableDatabase();
         return db.query(TABLE_NAME, new String[] {
-            COLUMN_ID
+                COLUMN_ID
         }, null, null, null, null, null).getCount();
     }
+
+    public List<Tweet> loadAll() {
+        final SQLiteCursor cursor = this.loadTweet(null);
+        cursor.moveToFirst();
+        final List<Tweet> list = new ArrayList<Tweet>(cursor.getCount());
+        for (int i = 0; i < cursor.getCount(); i++) {
+            list.add(getTweetFromCursorCurrentPosition(cursor));
+            cursor.moveToNext();
+        }
+        cursor.close();
+        return list;
+    }
+
+    private static Tweet getTweetFromCursorCurrentPosition(final Cursor cursor) {
+        final Tweet tweet = new Tweet();
+        tweet.setId(cursor.getLong(cursor.getColumnIndex(COLUMN_ID)));
+        tweet.setTweet(cursor.getString(cursor.getColumnIndex(COLUMN_TWEET)));
+        tweet.setInReplyToStatusId(cursor.getString(cursor
+                .getColumnIndex(COLUMN_IN_REPLY_TO_STATUS_ID)));
+        tweet.setLatitude(cursor.getString(cursor.getColumnIndex(COLUMN_LATITUDE)));
+        tweet.setLongitude(cursor.getString(cursor.getColumnIndex(COLUMN_LONGITUDE)));
+        return tweet;
+    }
+
 }
