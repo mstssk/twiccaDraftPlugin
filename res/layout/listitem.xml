@@ -1,13 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	android:orientation="horizontal" android:layout_height="wrap_content"
-	android:layout_width="fill_parent">
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal" >
 
-	<Button android:id="@+id/list_button_main" android:text="hoge"
-		android:layout_gravity="left" android:marqueeRepeatLimit="marquee_forever"
-		android:layout_weight="1.0" android:ellipsize="marquee" style="@style/IconButton" android:singleLine="true"/>
-	<ImageButton android:background="@drawable/item_selector"
-		android:id="@+id/list_button_submenu" android:src="@drawable/ic_submenu"
-		android:layout_width="wrap_content" android:layout_height="fill_parent"
-		android:layout_margin="5dip"></ImageButton>
+    <Button
+        android:id="@+id/list_button_main"
+        style="@style/IconButton"
+        android:layout_width="0dp"
+        android:layout_gravity="left"
+        android:layout_weight="1.0"
+        android:ellipsize="marquee"
+        android:marqueeRepeatLimit="marquee_forever"
+        android:singleLine="true"
+        android:text="" />
+
+    <ImageButton
+        android:id="@+id/list_button_submenu"
+        android:layout_width="wrap_content"
+        android:layout_height="fill_parent"
+        android:layout_margin="5dip"
+        android:background="@drawable/item_selector"
+        android:contentDescription="@string/description_button_submenu"
+        android:src="@drawable/ic_submenu" >
+    </ImageButton>
+
 </LinearLayout>

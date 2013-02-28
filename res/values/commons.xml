@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-	<string name="activity_save">.SaveTweetActivity</string>
-	<item type="id" name="tweet_id" format="integer">1</item>
-	<string name="prefkey_confirm_delete">prefkey_confirm_delete</string>
-	<string name="prefkey_confirm_overwrite">prefkey_confirm_overwrite</string>
-	<string name="prefkey_confirm_load">prefkey_confirm_load</string>
-	<string name="prefkey_confirm_load_only_editing">prefkey_confirm_load_only_editing</string>
-	<item format="boolean" name="pref_default" type="bool">false</item>
-	<string name="prefkey_quick_save">prefkey_quick_save</string>
+
+    <string name="activity_save" translatable="false">.SaveTweetActivity</string>
+
+    <item name="tweet_id" format="integer" type="id">1</item>
+
+    <string name="prefkey_confirm_delete" translatable="false">prefkey_confirm_delete</string>
+    <string name="prefkey_confirm_overwrite" translatable="false">prefkey_confirm_overwrite</string>
+    <string name="prefkey_confirm_load" translatable="false">prefkey_confirm_load</string>
+    <string name="prefkey_confirm_load_only_editing" translatable="false">prefkey_confirm_load_only_editing</string>
+
+    <item name="pref_default" format="boolean" type="bool">false</item>
+
+    <string name="prefkey_quick_save" translatable="false">prefkey_quick_save</string>
+
 </resources>

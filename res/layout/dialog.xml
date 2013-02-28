@@ -1,41 +1,58 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	android:layout_width="fill_parent" android:layout_height="fill_parent">
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content" >
 
-	<ScrollView android:layout_width="fill_parent"
-		android:layout_height="fill_parent" android:padding="5dip">
-		<LinearLayout android:orientation="vertical"
-			android:layout_height="fill_parent" android:layout_width="fill_parent">
-			
-			<!-- spacer -->
-			<View
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:layout_weight="2" android:minWidth="200dip"/>
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="10dip" >
 
-			<LinearLayout android:orientation="horizontal"
-				android:layout_height="fill_parent" android:gravity="center_horizontal"
-				android:layout_weight="2" android:layout_marginBottom="5dip"
-				android:layout_width="fill_parent">
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="0dp"
+            android:layout_marginBottom="5dip"
+            android:layout_weight="1"
+            android:gravity="center_horizontal"
+            android:minWidth="250dp"
+            android:orientation="horizontal" >
 
-				<Button android:text="@string/label_delete" android:id="@+id/button_delete"
-					android:layout_height="fill_parent" android:layout_weight="1"
-					android:drawableLeft="@drawable/ic_draft_del" android:layout_width="fill_parent"
-					style="@style/IconButton" />
+            <Button
+                android:id="@+id/button_delete"
+                style="@style/IconButton"
+                android:layout_width="0dp"
+                android:layout_height="fill_parent"
+                android:layout_weight="1"
+                android:drawableLeft="@drawable/ic_draft_del"
+                android:text="@string/label_delete" />
 
-				<Button android:id="@+id/button_overwrite" android:text="@string/label_overwrite"
-					android:layout_height="fill_parent" android:layout_weight="1"
-					android:layout_width="fill_parent" style="@style/IconButton" />
+            <Button
+                android:id="@+id/button_overwrite"
+                style="@style/IconButton"
+                android:layout_width="0dp"
+                android:layout_height="fill_parent"
+                android:layout_weight="1"
+                android:text="@string/label_overwrite" />
 
-				<Button android:id="@+id/button_load" android:text="@string/label_load"
-					android:layout_height="fill_parent" android:layout_width="fill_parent"
-					android:layout_weight="1"
-					android:visibility="gone" style="@style/IconButton"/>
-			</LinearLayout>
-			<TextView android:text="dummy" android:id="@+id/text_tweet_preview"
-				android:layout_width="fill_parent" android:layout_height="fill_parent"
-				android:textColor="@android:color/white" android:layout_weight="2"></TextView>
-		</LinearLayout>
-	</ScrollView>
+            <Button
+                android:id="@+id/button_load"
+                style="@style/IconButton"
+                android:layout_width="0dp"
+                android:layout_height="fill_parent"
+                android:layout_weight="1"
+                android:text="@string/label_load"
+                android:visibility="gone" />
+        </LinearLayout>
 
-</LinearLayout>
+        <TextView
+            android:id="@+id/text_tweet_preview"
+            android:layout_width="fill_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:text=""
+            android:textColor="@android:color/white" >
+        </TextView>
+    </LinearLayout>
+
+</ScrollView>

@@ -1,16 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	android:layout_width="wrap_content" android:layout_height="wrap_content">
-	<ScrollView android:layout_width="wrap_content"
-		android:layout_height="wrap_content" android:id="@+id/layoutarea">
-		<LinearLayout android:orientation="vertical"
-			android:layout_width="wrap_content" android:id="@+id/list_menus"
-			android:layout_height="wrap_content" android:padding="15dip">
-			<Button android:text="@string/label_save_new_draft"
-				android:id="@+id/button_save_as_new"
-				android:lines="1" android:layout_width="fill_parent"
-				android:layout_height="wrap_content" android:drawableLeft="@drawable/ic_plus"
-				style="@style/IconButton"></Button>
-		</LinearLayout>
-	</ScrollView>
-</LinearLayout>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/layoutarea"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content" >
+
+    <LinearLayout
+        android:id="@+id/list_menus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="15dip" >
+
+        <Button
+            android:id="@+id/button_save_as_new"
+            style="@style/IconButton"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:drawableLeft="@drawable/ic_plus"
+            android:lines="1"
+            android:text="@string/label_save_new_draft" />
+    </LinearLayout>
+
+</ScrollView>

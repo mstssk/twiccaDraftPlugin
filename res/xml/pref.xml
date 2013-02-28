@@ -1,13 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen
-  xmlns:android="http://schemas.android.com/apk/res/android">
-    
-    <PreferenceCategory android:title="@string/label_quick_save">
-        <CheckBoxPreference android:key="@string/prefkey_quick_save" android:title="@string/label_quick_save" android:defaultValue="@bool/pref_default"></CheckBoxPreference>
-    </PreferenceCategory><PreferenceCategory android:title="@string/label_confirm_dialog">
-        <CheckBoxPreference android:title="@string/label_overwrite" android:defaultValue="@bool/pref_default" android:key="@string/prefkey_confirm_overwrite"></CheckBoxPreference>
-        <CheckBoxPreference android:title="@string/label_delete" android:key="@string/prefkey_confirm_delete" android:defaultValue="@bool/pref_default"></CheckBoxPreference>
-        <CheckBoxPreference android:key="@string/prefkey_confirm_load" android:title="@string/label_load" android:defaultValue="@bool/pref_default"></CheckBoxPreference>
-        <CheckBoxPreference android:title="@string/text_only_editing" android:defaultValue="@bool/pref_default" android:key="@string/prefkey_confirm_load_only_editing" android:dependency="@string/prefkey_confirm_load"></CheckBoxPreference>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <PreferenceCategory android:title="@string/label_quick_save" >
+        <CheckBoxPreference
+            android:defaultValue="@bool/pref_default"
+            android:key="@string/prefkey_quick_save"
+            android:title="@string/label_quick_save" >
+        </CheckBoxPreference>
     </PreferenceCategory>
+    <PreferenceCategory android:title="@string/label_confirm_dialog" >
+        <CheckBoxPreference
+            android:defaultValue="@bool/pref_default"
+            android:key="@string/prefkey_confirm_overwrite"
+            android:title="@string/label_overwrite" >
+        </CheckBoxPreference>
+        <CheckBoxPreference
+            android:defaultValue="@bool/pref_default"
+            android:key="@string/prefkey_confirm_delete"
+            android:title="@string/label_delete" >
+        </CheckBoxPreference>
+        <CheckBoxPreference
+            android:defaultValue="@bool/pref_default"
+            android:key="@string/prefkey_confirm_load"
+            android:title="@string/label_load" >
+        </CheckBoxPreference>
+        <CheckBoxPreference
+            android:defaultValue="@bool/pref_default"
+            android:dependency="@string/prefkey_confirm_load"
+            android:key="@string/prefkey_confirm_load_only_editing"
+            android:title="@string/text_only_editing" >
+        </CheckBoxPreference>
+    </PreferenceCategory>
+
 </PreferenceScreen>
